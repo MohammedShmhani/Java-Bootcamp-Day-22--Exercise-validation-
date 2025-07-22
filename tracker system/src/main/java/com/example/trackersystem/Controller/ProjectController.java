@@ -58,29 +58,51 @@ public class ProjectController {
         return ResponseEntity.status(200).body(new ApiResponse("Project deleted successfully"));
     }
 
-    @PutMapping("/update/status/{index}")
-    public ResponseEntity<?> changeProjectStatus(@PathVariable int index,
-                                                 @RequestParam @NotBlank(message = "Status is required") @Pattern(regexp = "Not Started|In Progress|Completed", message = "Status must be Not Started, In Progress, or Completed only") String status
-            , Errors errors) {
-        if (errors.hasErrors()) {
-            return ResponseEntity.status(400).body(errors.getFieldError().getDefaultMessage());
-        }
-        if (index < 0 || index >= projects.size()) {
-            return ResponseEntity.status(400).body(new ApiResponse("Invalid index"));
-        }
-        projects.get(index).setStatus(status);
-        return ResponseEntity.status(200).body(new ApiResponse("Project status changed successfully"));
+    // @PutMapping("/update/status/{index}")
+    // public ResponseEntity<?> changeProjectStatus(@PathVariable int index,
+    //                                              @RequestParam @NotBlank(message = "Status is required") @Pattern(regexp = "Not Started|In Progress|Completed", message = "Status must be Not Started, In Progress, or Completed only") String status
+    //         , Errors errors) {
+    //     if (errors.hasErrors()) {
+    //         return ResponseEntity.status(400).body(errors.getFieldError().getDefaultMessage());
+    //     }
+    //     if (index < 0 || index >= projects.size()) {
+    //         return ResponseEntity.status(400).body(new ApiResponse("Invalid index"));
+    //     }
+    //     projects.get(index).setStatus(status);
+    //     return ResponseEntity.status(200).body(new ApiResponse("Project status changed successfully"));
+    // }
+
+    // @GetMapping("/search/{title}")
+    // public ResponseEntity<?> searchByTitle(@PathVariable String title) {
+    //     for (Project project : projects) {
+    //         if (project.getTitle().equals(title)) {
+    //             return ResponseEntity.status(200).body(project);
+    //         }
+    //     }
+    //     return ResponseEntity.status(400).body(new ApiResponse("Title not found"));
+    // }
+
+
+    //Update part
+    @PutMapping("/update/status/{index}/{status}")
+public ResponseEntity<?> changeProjectStatus(
+        @PathVariable int index,
+        @PathVariable String status) {
+
+    if (index < 0 || index >= projects.size()) {
+        return ResponseEntity.status(400).body(new ApiResponse("Invalid index"));
     }
 
-    @GetMapping("/search/{title}")
-    public ResponseEntity<?> searchByTitle(@PathVariable String title) {
-        for (Project project : projects) {
-            if (project.getTitle().equals(title)) {
-                return ResponseEntity.status(200).body(project);
-            }
-        }
-        return ResponseEntity.status(400).body(new ApiResponse("Title not found"));
+    if (!status.equals("Not Started") &&
+        !status.equals("In Progress") &&
+        !status.equals("Completed")) {
+        return ResponseEntity.status(400).body(new ApiResponse("Status must be Not Started, In Progress, or Completed only"));
     }
+
+    projects.get(index).setStatus(status);
+    return ResponseEntity.ok(new ApiResponse("Project status changed successfully"));
+}
+
 
     @GetMapping("/search/company/{companyName}")
     public ResponseEntity<?> getCompanyProjects(@PathVariable String companyName) {
